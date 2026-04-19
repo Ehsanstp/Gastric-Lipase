@@ -1,0 +1,9 @@
+langchain
+langchain-ollama
+langgraph
+langchain-community
+chromadb
+streamlit
+psycopg2-binary
+python-dotenv
+pymupdf

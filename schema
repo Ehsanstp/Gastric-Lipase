@@ -1,0 +1,22 @@
+-- Sessions: one row per page load
+CREATE TABLE IF NOT EXISTS sessions (
+    session_id  UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Messages: every user + assistant
+CREATE TABLE IF NOT EXISTS messages (
+    id          BIGSERIAL   PRIMARY KEY,
+    session_id  UUID        NOT NULL REFERENCES sessions (session_id) ON DELETE CASCADE,
+    role        TEXT        NOT NULL CHECK (role IN ('user', 'assistant')),
+    content     TEXT        NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Faster
+CREATE INDEX IF NOT EXISTS idx_messages_session
+    ON messages (session_id, created_at ASC);
+
+-- Delete prev session:
+DELETE FROM sessions
+WHERE created_at < NOW() - INTERVAL '1 day';
